@@ -33,7 +33,7 @@ float Si7020::getRH()
 {
 	// Measure the relative humidity 
 	uint16_t RH_Code = makeMeasurment(RH_NOHOLD);
-	float result = (125.0f * (RH_Code / 65536)) - 6.0f;
+	float result = ((125.0f * RH_Code) / 65536.0f) - 6.0f;
 	return result;
 }
 
@@ -41,7 +41,7 @@ float Si7020::readTemp()
 {
 	// Read temperature from previous RH measurement.
 	uint16_t temp_Code = makeMeasurment(TEMP_PREV);
-	float result = (175.25f * (temp_Code / 65536)) - 46.85f;
+	float result = ((175.25f * temp_Code) / 65536.0f) - 46.85f;
 	return result;
 }
 
@@ -49,7 +49,7 @@ float Si7020::getTemp()
 {
 	// Measure temperature 
 	uint16_t temp_Code = makeMeasurment(TEMP_NOHOLD);
-	float result = (175.25f * (temp_Code / 65536)) - 46.85f;
+	float result = ((175.25f * temp_Code) / 65536.0f) - 46.85f;
 	return result;
 }
 
