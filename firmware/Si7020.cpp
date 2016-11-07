@@ -33,7 +33,7 @@ float Si7020::getRH()
 {
 	// Measure the relative humidity 
 	uint16_t RH_Code = makeMeasurment(RH_NOHOLD);
-	float result = (125.0*RH_Code/65536)-6;
+	float result = (125.0f * (RH_Code / 65536)) - 6.0f;
 	return result;
 }
 
@@ -41,7 +41,7 @@ float Si7020::readTemp()
 {
 	// Read temperature from previous RH measurement.
 	uint16_t temp_Code = makeMeasurment(TEMP_PREV);
-	float result = (175.25*temp_Code/65536)-46.85;
+	float result = (175.25f * (temp_Code / 65536)) - 46.85f;
 	return result;
 }
 
@@ -49,7 +49,7 @@ float Si7020::getTemp()
 {
 	// Measure temperature 
 	uint16_t temp_Code = makeMeasurment(TEMP_NOHOLD);
-	float result = (175.25*temp_Code/65536)-46.85;
+	float result = (175.25f * (temp_Code / 65536)) - 46.85f;
 	return result;
 }
 
@@ -110,29 +110,30 @@ uint16_t Si7020::makeMeasurment(uint8_t command)
 {
 	// Take one Si7020 measurement given by command.
 	// It can be either temperature or relative humidity
-	// TODO: implement checksum checking
+	// TODO: implement checksum checking (this is the 3rd byte)
 	
 	uint16_t nBytes = 3;
 	// if we are only reading old temperature, read olny msb and lsb
-	if (command == 0xE0) nBytes = 2;
+	if (command == TEMP_PREV) nBytes = 2;
 
 	Wire.beginTransmission(SI7020);
 	Wire.write(command);
 	Wire.endTransmission();
+	
 	// When not using clock stretching (*_NOHOLD commands) delay here 
 	// is needed to wait for the measurement.
 	// According to datasheet the max. conversion time is ~22ms
-	 delay(100);
+	delay(100);
 		
-	Wire.requestFrom(SI7020,nBytes);
+	Wire.requestFrom(SI7020, nBytes);
 	//Wait for data
 	int counter = 0;
 	while (Wire.available() < nBytes){
 	  delay(1);
-	  counter ++;
-	  if (counter >100){
+	  counter++;
+	  if (counter > 100){
 	    // Timeout: Sensor did not return any data
-	    return 100;
+	    return 100; //### ???
 	  }
 	}
 
@@ -161,7 +162,7 @@ uint8_t Si7020::readReg()
 	Wire.beginTransmission(SI7020);
 	Wire.write(RREG);
 	Wire.endTransmission();
-	Wire.requestFrom(SI7020,1);
+	Wire.requestFrom(SI7020, 1);
 	uint8_t regVal = Wire.read();
 	return regVal;
 }
